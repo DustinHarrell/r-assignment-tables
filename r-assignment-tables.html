@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>R Assignment: Simple and Contingency Tables</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f8fa; --ink: #1b2230; --muted: #5b6577; --rule: #d9dde5;
+  --code-bg: #eceff5; --accent: #1f5fa8; --thead: #e1e8f3; --total: #eef2f8;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161d; --ink: #e4e8ef; --muted: #9aa5b8; --rule: #2a3240;
+    --code-bg: #1b212b; --accent: #7fb0ec; --thead: #1f2937; --total: #182030;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161d; --ink: #e4e8ef; --muted: #9aa5b8; --rule: #2a3240;
+  --code-bg: #1b212b; --accent: #7fb0ec; --thead: #1f2937; --total: #182030;
+  color-scheme: dark;
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+  font-size: 1.0625rem; line-height: 1.65;
+}
+main { max-width: 44rem; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+h1 { font-size: 2.1rem; line-height: 1.2; margin: 0 0 .5rem; letter-spacing: -.01em; }
+.lede { color: var(--muted); margin: 0 0 2.5rem; }
+h2 { font-size: 1.5rem; margin: 3rem 0 .75rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); }
+h3 { font-size: 1.15rem; margin: 2.25rem 0 .5rem; color: var(--accent); }
+p { margin: .75rem 0; max-width: 40rem; }
+pre {
+  background: var(--code-bg); border-radius: 6px; padding: .9rem 1rem; margin: 1rem 0;
+  overflow-x: auto; font-family: "Source Code Pro", Consolas, Menlo, monospace;
+  font-size: .88rem; line-height: 1.55;
+}
+code { font-family: "Source Code Pro", Consolas, Menlo, monospace; font-size: .9em; background: var(--code-bg); padding: .08em .3em; border-radius: 4px; }
+pre code { background: none; padding: 0; font-size: inherit; }
+.scroll { overflow-x: auto; margin: 1rem 0; max-width: 100%; }
+table { border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 16rem; }
+caption { text-align: left; color: var(--muted); font-size: .92rem; padding-bottom: .4rem; }
+th, td { padding: .4rem .9rem; border-bottom: 1px solid var(--rule); text-align: right; }
+thead th { background: var(--thead); border-bottom: 2px solid var(--accent); }
+th:first-child, td:first-child { text-align: left; }
+tbody th { font-weight: 600; }
+.total th, .total td { background: var(--total); font-weight: 600; }
+td.total-col { background: var(--total); font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>R assignment: simple and contingency tables</h1>
+  <p class="lede">A data frame built by hand, then a gears-by-cylinders table from the <code>mtcars</code> dataset with totals and proportions.</p>
+
+  <h2>Question 1: a simple table</h2>
+  <p>The data frame has ten rows and four columns: Country, age, salary and Purchased.</p>
+<pre><code>assignment_data &lt;- data.frame(
+  Country   = c("France","Spain","Germany","Spain","Germany",
+                "France","Spain","France","Germany","France"),
+  age       = c(44,27,30,38,40,35,52,48,45,37),
+  salary    = c(6000,5000,7000,4000,8000,5500,4500,6000,7500,5000),
+  Purchased = c("No","Yes","No","No","Yes","Yes","No","Yes","No","Yes")
+)
+
+assignment_data</code></pre>
+  <div class="scroll">
+  <table>
+    <caption>Output of <code>assignment_data</code></caption>
+    <thead><tr><th></th><th>Country</th><th>age</th><th>salary</th><th>Purchased</th></tr></thead>
+    <tbody>
+      <tr><th>1</th><td>France</td><td>44</td><td>6000</td><td>No</td></tr>
+      <tr><th>2</th><td>Spain</td><td>27</td><td>5000</td><td>Yes</td></tr>
+      <tr><th>3</th><td>Germany</td><td>30</td><td>7000</td><td>No</td></tr>
+      <tr><th>4</th><td>Spain</td><td>38</td><td>4000</td><td>No</td></tr>
+      <tr><th>5</th><td>Germany</td><td>40</td><td>8000</td><td>Yes</td></tr>
+      <tr><th>6</th><td>France</td><td>35</td><td>5500</td><td>Yes</td></tr>
+      <tr><th>7</th><td>Spain</td><td>52</td><td>4500</td><td>No</td></tr>
+      <tr><th>8</th><td>France</td><td>48</td><td>6000</td><td>Yes</td></tr>
+      <tr><th>9</th><td>Germany</td><td>45</td><td>7500</td><td>No</td></tr>
+      <tr><th>10</th><td>France</td><td>37</td><td>5000</td><td>Yes</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Question 2: contingency (r x c) table</h2>
+  <p>This table counts the cars in <code>mtcars</code> by number of gears (rows) and number of cylinders (columns). For example, 12 cars have 3 gears and 8 cylinders.</p>
+<pre><code>data(mtcars)
+assignment9 &lt;- table(mtcars$gear, mtcars$cyl, dnn = c("gears", "cylinders"))
+assignment9</code></pre>
+  <div class="scroll">
+  <table>
+    <caption>Counts of gears by cylinders</caption>
+    <thead><tr><th>gears \ cylinders</th><th>4</th><th>6</th><th>8</th></tr></thead>
+    <tbody>
+      <tr><th>3</th><td>1</td><td>2</td><td>12</td></tr>
+      <tr><th>4</th><td>8</td><td>4</td><td>0</td></tr>
+      <tr><th>5</th><td>2</td><td>1</td><td>2</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>2.1 Row and column totals with addmargins()</h3>
+<pre><code>addmargins(assignment9)</code></pre>
+  <div class="scroll">
+  <table>
+    <caption>Counts with row and column sums</caption>
+    <thead><tr><th>gears \ cylinders</th><th>4</th><th>6</th><th>8</th><th>Sum</th></tr></thead>
+    <tbody>
+      <tr><th>3</th><td>1</td><td>2</td><td>12</td><td class="total-col">15</td></tr>
+      <tr><th>4</th><td>8</td><td>4</td><td>0</td><td class="total-col">12</td></tr>
+      <tr><th>5</th><td>2</td><td>1</td><td>2</td><td class="total-col">5</td></tr>
+      <tr class="total"><th>Sum</th><td>11</td><td>7</td><td>14</td><td>32</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>There are 32 cars in total. By gears, 15 cars have 3 gears, 12 have 4 gears and 5 have 5 gears. By cylinders, 11 cars have 4 cylinders, 7 have 6 and 14 have 8.</p>
+
+  <h3>2.2 Proportion of each cell with prop.table()</h3>
+<pre><code>prop.table(assignment9)</code></pre>
+  <div class="scroll">
+  <table>
+    <caption>Each count divided by the grand total (32)</caption>
+    <thead><tr><th>gears \ cylinders</th><th>4</th><th>6</th><th>8</th></tr></thead>
+    <tbody>
+      <tr><th>3</th><td>0.03125</td><td>0.06250</td><td>0.37500</td></tr>
+      <tr><th>4</th><td>0.25000</td><td>0.12500</td><td>0.00000</td></tr>
+      <tr><th>5</th><td>0.06250</td><td>0.03125</td><td>0.06250</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Every cell is divided by the grand total of 32, so the nine values add up to 1. The largest share belongs to 3-gear, 8-cylinder cars at 0.375, or 37.5% of the dataset.</p>
+
+  <h3>2.3 Row proportions with margin = 1</h3>
+<pre><code>prop.table(assignment9, margin = 1)</code></pre>
+  <div class="scroll">
+  <table>
+    <caption>Each count divided by its row total</caption>
+    <thead><tr><th>gears \ cylinders</th><th>4</th><th>6</th><th>8</th></tr></thead>
+    <tbody>
+      <tr><th>3</th><td>0.0666667</td><td>0.1333333</td><td>0.8000000</td></tr>
+      <tr><th>4</th><td>0.6666667</td><td>0.3333333</td><td>0.0000000</td></tr>
+      <tr><th>5</th><td>0.4000000</td><td>0.2000000</td><td>0.4000000</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>With <code>margin = 1</code>, each row is divided by its own row total, so every row adds up to 1. Among 3-gear cars, 80% have 8 cylinders. Among 4-gear cars, about 67% have 4 cylinders and none have 8. Among 5-gear cars, 40% have 4 cylinders, 20% have 6 and 40% have 8.</p>
+</main>
+</body>
+</html>
